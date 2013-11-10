@@ -27,7 +27,7 @@ class PubchessController(players: MongoCollection) extends PubchessStack {
     players.find().map(toPlayer).toList
   }
 
-  get("/player/:id") {
+  get("/players/:id") {
     val query = MongoDBObject("_id" -> new ObjectId(params("id")))
     players.findOne(query) map toPlayer
   }

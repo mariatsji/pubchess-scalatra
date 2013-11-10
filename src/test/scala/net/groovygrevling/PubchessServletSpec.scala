@@ -50,9 +50,9 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
   it should "find single player" in {
     players.drop()
-    val createPlayer1: Player = createPlayer(newIdplayer)
+    val createPlayer1: Player = createPlayer(newPlayer)
 
-    get("/player/1") {
+    get("/players/" + createPlayer1._id.get) {
       status must be (200)
       fromJson[Player](body) must equal(createPlayer1)
     }
