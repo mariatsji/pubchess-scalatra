@@ -8,11 +8,8 @@
 
     <div class="player">
         <h2 class="title">
-            {{player.name}}
+            {{player.name}} ({{player.elo}})
         </h2>
-        <div class="meta">
-            <span class="fancy">av</span>
-        </div>
 
         <div class="buttons" class="btn-group">
             <button class="btn" ng-click="deletePlayer(player)">Slett spiller</button>
