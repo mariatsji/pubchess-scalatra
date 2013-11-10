@@ -1,0 +1,33 @@
+
+<article>
+    <div class="custom-alert" ng-show="showError">
+        <a class="close" ng-click="hideError()">&times;</a>
+        <strong>{{errorMessage}}</strong>
+    </div>
+
+
+    <div class="player">
+        <h2 class="title">
+            {{player.name}}
+        </h2>
+        <div class="meta">
+            <span class="fancy">av</span>
+        </div>
+
+        <div class="buttons" class="btn-group">
+            <button class="btn" ng-click="deletePlayer(player)">Slett spiller</button>
+            <button class="btn" ng-click="toggleShowPlayerEdit()" >Editer spiller</button>
+        </div>
+
+        <div class="buttons" class="btn-group" ng-show="showPlayerEdit">
+            <form class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+
+                </div>
+                <button type="submit" class="btn btn-default" ng-click="updatePlayer(player)">Oppdater</button>
+            </form>
+        </div>
+    </div>
+
+
+</article>
