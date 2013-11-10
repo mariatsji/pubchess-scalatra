@@ -10,7 +10,7 @@ function MainController($scope, dataService) {
         function() {
             showError('feil ved henting av spillere');
         }
-    );;
+    );
 
     function showError(message) {
         $scope.showError = true;

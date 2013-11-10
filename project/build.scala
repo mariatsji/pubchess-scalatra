@@ -3,9 +3,9 @@ import Keys._
 import org.scalatra.sbt._
 import spray.revolver.RevolverPlugin.Revolver
 
-object ScalakursbloggBuild extends Build {
-  val Organization = "scalakurs"
-  val Name = "scalakurs-blogg"
+object PubchessBuild extends Build {
+  val Organization = "pubchess"
+  val Name = "Pubchess"
   val Version = "0.1.0-SNAPSHOT"
   val ScalaVersion = "2.10.2"
   val ScalatraVersion = "2.2.1"
@@ -13,7 +13,7 @@ object ScalakursbloggBuild extends Build {
   val JettyVersion = "8.1.8.v20121106"
 
   lazy val project = Project (
-    "scalakurs-blogg",
+    "pubchess",
     file("."),
     settings = Defaults.defaultSettings ++ ScalatraPlugin.scalatraWithJRebel ++ Revolver.settings ++ Seq(
       organization := Organization,
