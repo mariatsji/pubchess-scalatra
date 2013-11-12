@@ -22,7 +22,6 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
   val jsonContentType = "Content-Type" -> "application/json"
 
   val newPlayer = Player(None, "Sjur")
-  val newIdplayer = Player(Some("1"), "Pixie")
 
   def createPlayer(player: Player) =
     post("/players", body = write(player).getBytes, headers = Map(jsonContentType)) {
@@ -50,15 +49,45 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
   it should "find single player" in {
     players.drop()
-    val createPlayer1: Player = createPlayer(newPlayer)
+    val beforeUpdate: Player = createPlayer(newPlayer)
 
-    get("/players/" + createPlayer1._id.get) {
+
+    get("/players/" + beforeUpdate._id.get) {
       status must be (200)
-      fromJson[Player](body) must equal(createPlayer1)
+      fromJson[Player](body) must equal(beforeUpdate)
+    }
+  }
+  
+  it should "delete single player" in {
+    players.drop()
+    val player: Player = createPlayer(newPlayer)
+    
+    delete("/players/" + player._id.get) {
+      status must be (200)
+
+      get("/players/" + player._id.get) {
+        status must be (200)
+        body must equal("")
+      }
     }
   }
 
+  it should "update single player" in {
+    players.drop()
+    val player = createPlayer(Player(None, "Sjur"))
+    val updatedPlayer = Player(player._id, "Sjuur")
 
+    put("/players/" + player._id.get, body = write(updatedPlayer).getBytes, headers = Map(jsonContentType)) {
+      status must be (200)
 
+      get("/players/" + player._id.get) {
+        status must be (200)
+
+        val player1: Player = fromJson[Player](body)
+        player1 must equal(updatedPlayer)
+
+      }
+    }
+  }
 
 }

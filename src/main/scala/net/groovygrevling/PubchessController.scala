@@ -14,36 +14,45 @@ class PubchessController(players: MongoCollection) extends PubchessStack {
 
   val logger = LoggerFactory.getLogger(getClass)
 
-  get("/") {
-    <html>
-      <body>
-        <h1>Pubchess</h1>
-        hi!!11
-      </body>
-    </html>
-  }
-
   get("/players") {
-    players.find().map(toPlayer).toList
+    players.find().map(mongoToPlayer).toList
   }
 
   get("/players/:id") {
     val query = MongoDBObject("_id" -> new ObjectId(params("id")))
-    players.findOne(query) map toPlayer
+    players.findOne(query) map mongoToPlayer
   }
 
   post("/players") {
     parsedBody.extractOpt[Player].map { player =>
       val doc = jsToMongo(Extraction.decompose(player))
       players.insert(doc)
-      toPlayer(doc)
+      mongoToPlayer(doc)
     } match {
       case None => BadRequest
       case Some(player) => Created(player)
     }
   }
 
-  def toPlayer(obj: DBObject) = mongoToJs(obj).extract[Player]
+  put("/players/:id") {
+    parsedBody.extractOpt[Player].map { player =>
+      val query = MongoDBObject("_id" -> new ObjectId(params("id")))
+      val doc = playerToMongo(player)
+      players.update(query, doc)
+      mongoToPlayer(doc)
+    } match {
+      case None => BadRequest
+      case Some(player) => Ok(player)
+    }
+  }
+
+  delete("/players/:id") {
+    val query = MongoDBObject("_id" -> new ObjectId(params("id")))
+    players.remove(query)
+  }
+
+  def mongoToPlayer(obj: DBObject): Player = mongoToJs(obj).extract[Player]
+  def playerToMongo(player: Player): DBObject = jsToMongo(Extraction.decompose(player))
   def jsToMongo(value: JValue): DBObject = JObjectParser.parse(value)
   def mongoToJs(obj: Any): JValue = JObjectParser.serialize(obj)
 
