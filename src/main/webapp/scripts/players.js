@@ -12,3 +12,18 @@ function httpGet(theUrl)
    xmlHttp.send( null );
    return xmlHttp.responseText;
 }
+
+function addPlayer(name){
+    var player = {}
+    player ["name"] = name;
+    player ["elo"] = 1200;
+    httpPost("http://localhost:7002/players",player)
+}
+
+function httpPost(theUrl, json){
+    var xmlHttp = null;
+    
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "POST", theUrl, false );
+    xmlHttp.send( json ); 
+}
