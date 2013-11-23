@@ -26,6 +26,9 @@ function httpPost(theUrl, json){
     var xmlHttp = null;
     
     xmlHttp = new XMLHttpRequest();
+    xmlHttp.setRequestHeader('Content-type','application/json; charset=utf-8');
+    xmlHttp.setRequestHeader('Content-length',json.length);
+    xmlHttp.setRequestHeader('Connection',"close");
     xmlHttp.open( "POST", theUrl, false );
     xmlHttp.send( json ); 
 }
