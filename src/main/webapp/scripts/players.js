@@ -1,13 +1,10 @@
 function getPlayers(){
-    var players = httpGet("http://localhost:7002/players");
+    var players = httpGet("/players");
     return JSON.parse(players);
 }
 
-function httpGet(theUrl)
-{
-   var xmlHttp = null;
-
-   xmlHttp = new XMLHttpRequest();
+function httpGet(theUrl) {
+   var xmlHttp = new XMLHttpRequest();
    xmlHttp.open( "GET", theUrl, false );
    xmlHttp.send( null );
    return xmlHttp.responseText;
@@ -19,16 +16,15 @@ function addPlayer(name){
     player ["elo"] = "1200";
     var postjson = JSON.stringify(player);
     
-    httpPost("http://localhost:7002/players",postjson)
+    httpPost("/players",postjson)
 }
 
 function httpPost(theUrl, json){
-    var xmlHttp = null;
-    
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.setRequestHeader('Content-type','application/json; charset=utf-8');
-    xmlHttp.setRequestHeader('Content-length',json.length);
-    xmlHttp.setRequestHeader('Connection',"close");
-    xmlHttp.open( "POST", theUrl, false );
-    xmlHttp.send( json ); 
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "POST", theUrl, true );
+    xmlHttp.setRequestHeader('Content-type','application/json; charset=UTF-8');
+    xmlHttp.send( json );
+    xmlHttp.onloadend = function() {
+        console.log("completed sending new player")
+    }
 }
