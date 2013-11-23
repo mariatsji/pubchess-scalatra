@@ -16,8 +16,10 @@ function httpGet(theUrl)
 function addPlayer(name){
     var player = {}
     player ["name"] = name;
-    player ["elo"] = 1200;
-    httpPost("http://localhost:7002/players",player)
+    player ["elo"] = "1200";
+    var postjson = JSON.stringify(player);
+    
+    httpPost("http://localhost:7002/players",postjson)
 }
 
 function httpPost(theUrl, json){
