@@ -1,5 +1,5 @@
 import com.mongodb.casbah.Imports._
-import net.groovygrevling.PubchessController
+import net.groovygrevling.{PubchessController}
 import org.scalatra._
 import javax.servlet.ServletContext
 
@@ -9,7 +9,9 @@ class ScalatraBootstrap extends LifeCycle {
     val mongoClient = MongoClient()
     val db = mongoClient("chess")
     val players = db("players")
+    val matches = db("matches")
 
-    context.mount(new PubchessController(players), "/players/*")
+    context.mount(new PubchessController(players, matches), "/*")
+
   }
 }

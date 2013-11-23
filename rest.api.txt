@@ -1,0 +1,20 @@
+x GET /players <- lister alle spillere
+x GET /players/1 <- henter spiller med id 1
+x PUT /players/1 <- update spiller 1
+x DELETE /players/1 <- delete spiller 1
+x POST /players <- add ny spiller
+
+x GET /matches <- list all matches
+x GET /matches/1 <- match details id 1
+x POST /matches <- create new match? (hm.. )
+x PUT /matches/1 <- set result for match 1 (edit matches detail)
+x DELETE /matches/1 <- delete match 1
+
+GET /tournaments <- list tournaments
+GET /tournaments/1 <- get details 1
+POST /tournaments/single <- tournament name + list of players inn, list matches back
+POST /tournaments/double <- tournament name + list of players inn, list matches back
+PUT /touranments/1 <- edit tournament 1
+DELETE /tournaments/1 <- delete tournament 1
+
+
