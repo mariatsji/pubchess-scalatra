@@ -16,6 +16,7 @@ object PubchessMain {
     context.setContextPath("/")
     context.setResourceBase("src/main/webapp")
     context.addEventListener(new ScalatraListener)
+    context.setWelcomeFiles(Array("index.html"))
 
     server.setHandler(context)
 

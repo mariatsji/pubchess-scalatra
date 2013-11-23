@@ -1,17 +1,20 @@
-<!doctype html>
-<html ng-app>
+<!DOCTYPE html>
+<html>
 <head>
     <script src="scripts/players.js"></script>
 </head>
 <body>
 <h1>Pubchess</h1>
 
-Some players here
-<div>
-    <ul>
-
-    </ul>
-</div>
+<p><input type="text" id="playername"/><button type="button" onclick="newPlayer(document.getElementById('playername'));">new Player</button></p>
+<ul>
+    <script>
+        var players = getPlayers();
+        for(var i = 0; i < players.length; i++) {
+            document.write("<li>" + players[i].name + " (" + players[i].elo + ") </li>");
+        }
+    </script>
+</ul>
 
 </body>
 </html>
