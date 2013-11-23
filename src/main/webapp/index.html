@@ -1,20 +1,15 @@
 <!doctype html>
 <html ng-app>
 <head>
-    <script src="scripts/lib/angular.js"></script>
-    <script src="scripts/lib/jquery-1.10.2.js"></script>
-    <script src="scripts/model/dataService.js"></script>
-    <script src="scripts/controller/pubchess.js"></script>
-    <script src="scripts/app.js"></script>
+    <script src="scripts/players.js"></script>
 </head>
 <body>
 <h1>Pubchess</h1>
 
-<div ng-controller="PubchessController">
+Some players here
+<div>
     <ul>
-        <li ng-repeat="player in players">
-            {{player.name}} ({{player.elo}})
-        </li>
+
     </ul>
 </div>
 
