@@ -122,12 +122,47 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     }
   }
 
+  get("/tournaments") {
+    contentType = formats("json")
+    logger.debug("showing all tournaments")
+    tournamentDB.find().map(mongoToTournament).toList
+  }
+
+  get("/tournaments/:id") {
+    contentType = formats("json")
+    val id = params("id")
+    logger.debug(s"finding tournament $id")
+    getTournamentFromDB(id)
+  }
+
+  def getTournamentFromDB(id: String) : Option[Tournament] = {
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    tournamentDB.findOne(query) map mongoToTournament
+  }
+
   post("/tournaments/double") {
+    contentType = formats("json")
+    logger.debug("creating double tournament")
+    parsedBody.extractOpt[Tournament].map { tournament =>
+      val players = tournament.playerids.flatMap(getPlayerFromDB)
+      val matches: List[Match] = PubchessLogic.drawDoubleTournament(players)
+      val matchesWithId: List[Match] = matches.map(storeMatchInDB)
+      tournament.setMatches(matchesWithId.map(_._id.get))
+      val doc: DBObject = jsToMongo(Extraction.decompose(tournament))
+      tournamentDB.insert(doc)
+      mongoToTournament(doc)
+    } match {
+      case None => BadRequest
+      case Some(t) => Created(t)
+    }
+  }
+
+  post("/tournaments/single") {
     contentType = formats("json")
     logger.debug("creating single tournament")
     parsedBody.extractOpt[Tournament].map { tournament =>
       val players = tournament.playerids.flatMap(getPlayerFromDB)
-      val matches: List[Match] = PubchessLogic.drawDoubleTournament(players)
+      val matches: List[Match] = PubchessLogic.drawSingleTournament(players)
       val matchesWithId: List[Match] = matches.map(storeMatchInDB)
       tournament.setMatches(matchesWithId.map(_._id.get))
       val doc: DBObject = jsToMongo(Extraction.decompose(tournament))

@@ -11,10 +11,10 @@ x PUT /matches/1 <- edit matches detail (store result, but dont adjust elo)
 x DELETE /matches/1 <- delete match 1
 FLYTTET TIL /tournament/commit		POST /matches/1 <- set result, adjust elo, store players
 
-GET /tournaments <- list tournaments
-GET /tournaments/1 <- get details 1
-POST /tournaments/single <- tournament obj with empty list of matches inn, complete tournament back
-POST /tournaments/double <- tournament obj with empty list of matches inn, complete tournament back
+x GET /tournaments <- list tournaments
+x GET /tournaments/1 <- get details 1
+x POST /tournaments/single <- tournament obj with empty list of matches inn, complete tournament back
+x POST /tournaments/double <- tournament obj with empty list of matches inn, complete tournament back
 POST /tournaments/commit <- verify all matches has result adjusts elo for all matches, save players, save tournament
 PUT /touranments/1 <- edit tournament 1
 DELETE /tournaments/1 <- delete tournament 1

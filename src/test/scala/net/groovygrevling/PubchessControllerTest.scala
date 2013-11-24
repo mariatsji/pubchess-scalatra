@@ -65,6 +65,20 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
     createDoubleTournament(tournament)
   }
 
+  def createSingleTournament(t: Tournament): Tournament = {
+    post("/tournaments/single", body = write(t).getBytes, headers = Map(jsonContentType)) {
+      status must be (201)
+      val created = fromJson[Tournament](body)
+      created
+    }
+  }
+
+  def createSingleTournament(name: String, players: List[Player]): Tournament = {
+    val playersWithId = players.distinct.map(createPlayer)
+    val tournament = Tournament(None, name, new Date(), playersWithId.map(_._id.get), List())
+    createSingleTournament(tournament)
+  }
+
   def fromJson[T: Manifest](body: String) = parse(body).extract[T]
 
 
@@ -183,9 +197,25 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
     }
   }
 
-  it should "store a new tournament" in {
+  it should "store a new double tournament" in {
     tournaments.drop()
     createDoubleTournament("TestTournament", List(Player(None, "Sjur"), Player(None, "Vasja"), Player(None, "Pixie")))
+  }
+
+  it should "store a new single tournament" in {
+    tournaments.drop()
+    createSingleTournament("TestTournament", List(Player(None, "Sjur"), Player(None, "Vasja"), Player(None, "Pixie")))
+  }
+
+  it should "list all tournaments " in {
+    tournaments.drop()
+    val t1 = createSingleTournament("TestTournament1", List(Player(None, "Sjur"), Player(None, "Vasja"), Player(None, "Pixie")))
+    val t2 = createDoubleTournament("TestTournament2", List(Player(None, "Sjur"), Player(None, "Vasja"), Player(None, "Pixie")))
+
+    get("/tournaments") {
+      status must be (200)
+      fromJson[List[Tournament]](body) must equal(List(t1, t2))
+    }
   }
 
 
