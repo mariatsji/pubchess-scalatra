@@ -10,8 +10,9 @@ class ScalatraBootstrap extends LifeCycle {
     val db = mongoClient("chess")
     val players = db("players")
     val matches = db("matches")
+    val tournaments = db("tournaments")
 
-    context.mount(new PubchessController(players, matches), "/*")
+    context.mount(new PubchessController(players, matches, tournaments), "/*")
 
   }
 }

@@ -1,7 +1,7 @@
 package net.groovygrevling
 
 import org.scalatra._
-import com.mongodb.casbah.MongoCollection
+import com.mongodb.casbah.{Imports, MongoCollection}
 import org.slf4j.LoggerFactory
 import com.mongodb.DBObject
 import org.json4s.JsonAST.JValue
@@ -12,7 +12,7 @@ import com.mongodb.casbah.commons.MongoDBObject
 import java.io.File
 import org.scalatra.json.JacksonJsonSupport
 
-class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
+class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
 
   val logger = LoggerFactory.getLogger(getClass)
   protected implicit val jsonFormats: Formats = DefaultFormats
@@ -23,12 +23,16 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection)
     playersDB.find().map(mongoToPlayer).toList
   }
 
+  def getPlayerFromDB(id: String) : Option[Player] = {
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    playersDB.findOne(query) map mongoToPlayer
+  }
+
   get("/players/:id") {
     contentType = formats("json")
     val id = params("id")
     logger.debug(s"finding player $id")
-    val query = MongoDBObject("_id" -> new ObjectId(id))
-    playersDB.findOne(query) map mongoToPlayer
+    getPlayerFromDB(id)
   }
 
   post("/players") {
@@ -82,14 +86,16 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection)
   post("/matches") {
     contentType = formats("json")
     logger.debug("creating new match")
-    parsedBody.extractOpt[Match].map { myMatch =>
-      val doc: DBObject = jsToMongo(Extraction.decompose(myMatch))
-      matchesDB.insert(doc)
-      mongoToMatch(doc)
-    } match {
+    parsedBody.extractOpt[Match].map(storeMatchInDB) match {
       case None => BadRequest
       case Some(myMatch) => Created(myMatch)
     }
+  }
+
+  def storeMatchInDB(m: Match) = {
+    val doc: DBObject = jsToMongo(Extraction.decompose(m))
+    matchesDB.insert(doc)
+    mongoToMatch(doc)
   }
 
   delete("/matches/:id") {
@@ -116,10 +122,29 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection)
     }
   }
 
+  post("/tournaments/double") {
+    contentType = formats("json")
+    logger.debug("creating single tournament")
+    parsedBody.extractOpt[Tournament].map { tournament =>
+      val players = tournament.playerids.flatMap(getPlayerFromDB)
+      val matches: List[Match] = PubchessLogic.drawDoubleTournament(players)
+      val matchesWithId: List[Match] = matches.map(storeMatchInDB)
+      tournament.setMatches(matchesWithId.map(_._id.get))
+      val doc: DBObject = jsToMongo(Extraction.decompose(tournament))
+      tournamentDB.insert(doc)
+      mongoToTournament(doc)
+    } match {
+      case None => BadRequest
+      case Some(t) => Created(t)
+    }
+  }
+
   def mongoToPlayer(obj: DBObject): Player = mongoToJs(obj).extract[Player]
   def mongoToMatch(obj: DBObject): Match = mongoToJs(obj).extract[Match]
+  def mongoToTournament(obj: DBObject): Tournament = mongoToJs(obj).extract[Tournament]
   def playerToMongo(player: Player): DBObject = jsToMongo(Extraction.decompose(player))
   def matchToMongo(myMatch: Match): DBObject = jsToMongo(Extraction.decompose(myMatch))
+  def tournamentToMongo(myTournament: Tournament): DBObject = jsToMongo(Extraction.decompose(myTournament))
   def jsToMongo(value: JValue): DBObject = JObjectParser.parse(value)
   def mongoToJs(obj: Any): JValue = JObjectParser.serialize(obj)
 
