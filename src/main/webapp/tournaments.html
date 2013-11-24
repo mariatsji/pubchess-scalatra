@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="scripts/pubchess.js"></script>
+</head>
+<body>
+<h1>Pubchess</h1>
+
+<script>
+    var players = getPlayers();
+    for(var i = 0; i < players.length; i++) {
+        document.write("<input type=\"checkbox\" name=\"participants\" value=\"" + players[i]._id + "\">" + players[i].name + " (" + players[i].elo + ") </input>");
+    }
+</script>
+
+<p>
+    <input type="text" id="tournamentname"/>
+    <button type="button" onclick="addTournamentSingle(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Single Tournament</button>
+    <button type="button" onclick="addTournamentDouble(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Double Tournament</button>
+</p>
+
+<p>
+    <a href="index.html">Players</a>
+</p>
+
+</body>
+</html>

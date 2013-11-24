@@ -147,8 +147,8 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
       val players = tournament.playerids.flatMap(getPlayerFromDB)
       val matches: List[Match] = PubchessLogic.drawDoubleTournament(players)
       val matchesWithId: List[Match] = matches.map(storeMatchInDB)
-      tournament.setMatches(matchesWithId.map(_._id.get))
-      val doc: DBObject = jsToMongo(Extraction.decompose(tournament))
+      val newTournament: Tournament = tournament.setMatches(matchesWithId.map(_._id.get))
+      val doc: DBObject = jsToMongo(Extraction.decompose(newTournament))
       tournamentDB.insert(doc)
       mongoToTournament(doc)
     } match {
@@ -164,8 +164,8 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
       val players = tournament.playerids.flatMap(getPlayerFromDB)
       val matches: List[Match] = PubchessLogic.drawSingleTournament(players)
       val matchesWithId: List[Match] = matches.map(storeMatchInDB)
-      tournament.setMatches(matchesWithId.map(_._id.get))
-      val doc: DBObject = jsToMongo(Extraction.decompose(tournament))
+      val newTournament: Tournament = tournament.setMatches(matchesWithId.map(_._id.get))
+      val doc: DBObject = jsToMongo(Extraction.decompose(newTournament))
       tournamentDB.insert(doc)
       mongoToTournament(doc)
     } match {
