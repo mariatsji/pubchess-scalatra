@@ -3,6 +3,11 @@ function getPlayers() {
     return JSON.parse(players);
 }
 
+function getTournaments() {
+    var tournaments = httpGet("/tournaments");
+    return JSON.parse(tournaments);
+}
+
 function httpGet(theUrl) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", theUrl, false);

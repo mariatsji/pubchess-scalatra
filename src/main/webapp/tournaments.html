@@ -19,6 +19,15 @@
     <button type="button" onclick="addTournamentDouble(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Double Tournament</button>
 </p>
 
+<ul>
+    <script>
+        var tournaments = getTournaments();
+        for(var i = 0; i < tournaments.length; i++) {
+            document.write("<li>" + tournaments[i].name + " (" + tournaments[i].date + ") : " + tournaments[i].playerids.length + " players in " + tournaments[i].matchids.length + " matches </li>");
+        }
+    </script>
+</ul>
+
 <p>
     <a href="index.html">Players</a>
 </p>
