@@ -1,7 +1,7 @@
 package net.groovygrevling
 
 import org.scalatra._
-import com.mongodb.casbah.{Imports, MongoCollection}
+import com.mongodb.casbah.MongoCollection
 import org.slf4j.LoggerFactory
 import com.mongodb.DBObject
 import org.json4s.JsonAST.JValue
@@ -9,7 +9,6 @@ import org.json4s.mongo.JObjectParser
 import org.json4s.{DefaultFormats, Formats, Extraction}
 import org.bson.types.ObjectId
 import com.mongodb.casbah.commons.MongoDBObject
-import java.io.File
 import org.scalatra.json.JacksonJsonSupport
 
 class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
@@ -39,14 +38,19 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     contentType = formats("json")
     logger.debug("creating new player")
     parsedBody.extractOpt[Player].map { player =>
-      val doc = jsToMongo(Extraction.decompose(player))
-      playersDB.insert(doc)
-      mongoToPlayer(doc)
+      storePlayerInDB(player)
     } match {
       case None => BadRequest
       case Some(player) => Created(player)
     }
   }
+
+  def storePlayerInDB(p: Player) = {
+    val doc: DBObject = jsToMongo(Extraction.decompose(p))
+    playersDB.insert(doc)
+    mongoToPlayer(doc)
+  }
+
 
   put("/players/:id") {
     contentType = formats("json")
@@ -96,6 +100,11 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     val doc: DBObject = jsToMongo(Extraction.decompose(m))
     matchesDB.insert(doc)
     mongoToMatch(doc)
+  }
+  
+  def getMatchFromDB(id: String) = {
+    val query = MongoDBObject("_id" -> new ObjectId(id))
+    matchesDB.findOne(query) map mongoToMatch 
   }
 
   delete("/matches/:id") {
@@ -171,6 +180,57 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     } match {
       case None => BadRequest
       case Some(t) => Created(t)
+    }
+  }
+  
+  put("/tournaments/commit/:id") {
+    contentType = formats("json")
+    val id = params("id")
+    logger.debug(s"commiting tournament $id")
+    parsedBody.extractOpt[Tournament].map { tournament =>
+      val matches = tournament.matchids.flatMap(getMatchFromDB)
+      if(matches.exists(_.result == 0)) {
+        None
+      } else {
+        matches.map((m : Match) =>
+          {
+            val white: Player = getPlayerFromDB(m.white_id).get
+            val black: Player = getPlayerFromDB(m.black_id).get
+            val kFactorWhite: Long = getKfactor(m.white_id)
+            val kFactorBlack: Long = getKfactor(m.black_id)
+            val newElos: (Double, Double) = Elo.calculate(white.elo, black.elo, m.result, kFactorWhite, kFactorBlack)
+            val newEloWhite = newElos._1
+            val newEloBlack = newElos._2
+            white.setElo(newEloWhite)
+            black.setElo(newEloBlack)
+            storePlayerInDB(white)
+            storePlayerInDB(black)
+          }
+        )
+      }
+    } match {
+      case None=> BadRequest
+      case Some(m) => Ok(m)
+    }
+  }
+
+  def allEverMatchesForPlayer(playerid: String) = {
+    val allMatches = matchesDB.find().map(mongoToMatch).toList
+    allMatches.filter((m: Match) => m.white_id == playerid || m.black_id == playerid)
+  }
+
+
+  /**
+   * FIDE rules:
+   * K = 30 (was 25) for a player new to the rating list until s/he has completed events with a total of at least 30 games.[15]
+   * K = 15 as long as a player's rating remains under 2400.
+   * K = 10 once a player's published rating has reached 2400, and s/he has also completed events with a total of at least 30 games. Thereafter it remains permanently at 10.
+   */
+  def getKfactor(playerid: String): Long = {
+    def playedMatches: Int = allEverMatchesForPlayer(playerid).size
+    if (playedMatches < 30) 30
+    else {
+      if(getPlayerFromDB(playerid).get.elo < 2400) 15 else 10
     }
   }
 

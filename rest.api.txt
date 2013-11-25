@@ -15,7 +15,7 @@ x GET /tournaments <- list tournaments
 x GET /tournaments/1 <- get details 1
 x POST /tournaments/single <- tournament obj with empty list of matches inn, complete tournament back
 x POST /tournaments/double <- tournament obj with empty list of matches inn, complete tournament back
-POST /tournaments/commit <- verify all matches has result adjusts elo for all matches, save players, save tournament
+POST /tournaments/commit <- verify all matches has result adjusts elo for all matches, save players
 PUT /touranments/1 <- edit tournament 1
 DELETE /tournaments/1 <- delete tournament 1
 
