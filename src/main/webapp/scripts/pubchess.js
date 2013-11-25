@@ -40,7 +40,17 @@ function httpPost(theUrl, json) {
     xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
     xmlHttp.send(json);
     xmlHttp.onloadend = function () {
-        console.log('completed sending new player')
+        console.log('completed sending new player');
+    }
+}
+
+function httpPut(theUrl, json) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('PUT', theUrl, true);
+    xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+    xmlHttp.send(json);
+    xmlHttp.onloadend = function () {
+        console.log('completed sending new player');
     }
 }
 
@@ -95,9 +105,9 @@ function printMatchResult(match) {
     var retString = '-';
 
     if(match.result == result_white_won) {
-        retString = 'Black won';
+        retString = 'White won';
     } else if (match.result == result_black_won) {
-        retString =  'White won';
+        retString =  'Black won';
     } else if (match.result == result_draw) {
         retString = 'Remis';
     }
@@ -114,8 +124,11 @@ function printMatchResultButtons(match) {
         '<button type=\"button\" onClick=\"saveMatchResult(\'' + match._id + '\',' + result_black_won +');\">Black won</button>';
 }
 
-function saveMatchResult(match, result) {
-    alert('saving ' + match + ' : ' + result);
+function saveMatchResult(matchid, result) {
+    var fullMatch = getMatch(matchid);
+    fullMatch.result = result;
+    var json = JSON.stringify(fullMatch);
+    httpPut('/matches/' + matchid, json);
 }
 
 
