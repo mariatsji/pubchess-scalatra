@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="scripts/pubchess.js"></script>
+</head>
+<body>
+<h1>Pubchess</h1>
+
+<ul>
+<script>
+    var tournament = getTournament(getRequestParameter('id'));
+
+    for (var i = 0 ; i < tournament.matchids.length ; i ++) {
+        document.write(
+                printMatchLI(getMatch(tournament.matchids[i]))
+        );
+    }
+</script>
+</ul>
+
+<p>
+    <a href="players.html">Players</a>
+    <a href="tournaments.html">Tournaments</a>
+</p>
+
+</body>
+</html>
