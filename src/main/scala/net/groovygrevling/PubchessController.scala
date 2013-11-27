@@ -109,8 +109,14 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     val query = MongoDBObject("_id" -> new ObjectId(m._id.get))
     val doc = matchToMongo(m)
     matchesDB.update(query, doc)
-    val returned = mongoToMatch(doc)
-    returned
+    mongoToMatch(doc)
+  }
+
+  def updatePlayerInDB(p: Player) = {
+    val query = MongoDBObject("_id" -> new ObjectId(p._id.get))
+    val doc = playerToMongo(p)
+    playersDB.update(query, doc)
+    mongoToPlayer(doc)
   }
   
   def getMatchFromDB(id: String) = {
@@ -208,7 +214,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     logger.debug(s"commiting tournament $id")
     getTournamentFromDB(id).map { tournament =>
       val matches = tournament.matchids.flatMap(getMatchFromDB)
-      if(matches.exists(_.result == 0)) {
+      if(matches.exists(_.result == Result.UNPLAYED)) {
         None
       } else {
         matches.map((m : Match) =>
@@ -220,12 +226,13 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
             val newElos: (Double, Double) = Elo.calculate(white.elo, black.elo, m.result, kFactorWhite, kFactorBlack)
             val newEloWhite = newElos._1
             val newEloBlack = newElos._2
-            white.setElo(newEloWhite)
-            archiveNewElo(white, newEloWhite)
-            black.setElo(newEloBlack)
-            archiveNewElo(black, newEloBlack)
-            storePlayerInDB(white)
-            storePlayerInDB(black)
+            val newWhite = white.setElo(newEloWhite)
+            archiveNewElo(newWhite, newEloWhite)
+            val newBlack = black.setElo(newEloBlack)
+            archiveNewElo(newBlack, newEloBlack)
+            updatePlayerInDB(newWhite)
+            updatePlayerInDB(newBlack)
+            tournament
           }
         )
       }

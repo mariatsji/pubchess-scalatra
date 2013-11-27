@@ -135,3 +135,11 @@ function saveMatchResult(matchid, result) {
 function printTournamentAHREF(tournament) {
     return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date + ')';
 }
+
+function printCommitButton(tournament) {
+    return '<button type=\"button\" onClick=\"commitTournament(\'' + tournament._id + '\');\">Commit tournament</button>';
+}
+
+function commitTournament(tournamentid) {
+    httpPut("/tournaments/commit/" + tournamentid);
+}

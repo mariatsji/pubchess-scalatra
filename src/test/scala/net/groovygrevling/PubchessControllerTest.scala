@@ -227,15 +227,16 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
     val matchlist = t1.matchids.flatMap(pc.getMatchFromDB)
     
-    matchlist(0).setResult(Result.WHITE_WON)
-    matchlist(1).setResult(Result.BLACK_WON)
-    matchlist(2).setResult(Result.DRAW)
+    val m1 = matchlist(0).setResult(Result.WHITE_WON)
+    val m2 = matchlist(1).setResult(Result.BLACK_WON)
+    val m3 = matchlist(2).setResult(Result.WHITE_WON)
 
-    matchlist.foreach(pc.updateMatchInDB)
+    List(m1,m2,m3).foreach(pc.updateMatchInDB)
 
     put("/tournaments/commit/" + t1._id.get) {
       status must be (200)
-      t1.playerids.flatMap(pc.getPlayerFromDB).count(_.elo != 1200) must equal(0)
+      val playerslist = t1.playerids.flatMap(pc.getPlayerFromDB)
+      playerslist.count(_.elo == 1200) must equal(0)
     }
   }
 
