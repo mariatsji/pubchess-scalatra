@@ -6,14 +6,12 @@
 <body>
 <h1>Pubchess</h1>
 
+<script>
+    getPlayers();
+</script>
+
 <p><input type="text" id="playername"/><button type="button" onclick="addPlayer(document.getElementById('playername').value);">new Player</button></p>
-<ul>
-    <script>
-        var players = getPlayers();
-        for(var i = 0; i < players.length; i++) {
-            document.write("<li>" + players[i].name + " (" + players[i].elo + ") </li>");
-        }
-    </script>
+<ul id="players">
 </ul>
 
 <p>

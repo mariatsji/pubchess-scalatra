@@ -8,8 +8,7 @@ function getPlayer(playerid) {
 }
 
 function getPlayers() {
-    var players = httpGet('/players');
-    return JSON.parse(players);
+    asyncGet('/players', getPlayersCallback);
 }
 
 function getMatch(matchid) {
@@ -32,6 +31,13 @@ function httpGet(theUrl) {
     xmlHttp.open('GET', theUrl, false);
     xmlHttp.send(null);
     return xmlHttp.responseText;
+}
+
+function asyncGet(theUrl, callbackFunction) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = callbackFunction;
+    xmlHttp.open('GET', theUrl, true);
+    xmlHttp.send(null);
 }
 
 function httpPost(theUrl, json) {
@@ -142,4 +148,19 @@ function printCommitButton(tournament) {
 
 function commitTournament(tournamentid) {
     httpPut("/tournaments/commit/" + tournamentid);
+}
+
+var getPlayersCallback = function() {
+    if(this.readyState == this.DONE) {
+        drawPlayers(JSON.parse(this.response));
+    }
+};
+
+function drawPlayers(players) {
+    for (var i = 0 ; i < players.length ; i++){
+        var ul = document.getElementById('players');
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
+        ul.appendChild(li);
+    }
 }
