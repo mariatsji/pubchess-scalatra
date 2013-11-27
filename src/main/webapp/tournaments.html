@@ -6,13 +6,6 @@
 <body>
 <h1>Pubchess</h1>
 
-<script>
-    var players = getPlayers();
-    for(var i = 0; i < players.length; i++) {
-        document.write("<input type=\"checkbox\" name=\"participants\" value=\"" + players[i]._id + "\">" + players[i].name + " (" + players[i].elo + ") </input>");
-    }
-</script>
-
 <p>
     <input type="text" id="tournamentname"/>
     <button type="button" onclick="addTournamentSingle(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Single Tournament</button>

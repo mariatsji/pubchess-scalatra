@@ -139,7 +139,7 @@ function saveMatchResult(matchid, result) {
 
 
 function printTournamentAHREF(tournament) {
-    return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date + ')';
+    return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date  + ')';
 }
 
 function printCommitButton(tournament) {
