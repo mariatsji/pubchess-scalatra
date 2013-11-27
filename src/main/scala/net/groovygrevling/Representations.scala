@@ -12,6 +12,7 @@ case class Match(_id: Option[String], white_id: String, black_id: String, result
 case class Tournament(_id: Option[String], name: String, date: Date = new Date(), playerids: List[String], matchids: List[String]) {
   def setMatches(newMatchIds: List[String]) = Tournament(_id, name, date, playerids, newMatchIds)
 }
+case class EloArchived(_id: Option[String], playerid: String, date: Date, elo: Double)
 
 object Result {
   val DRAW = 3

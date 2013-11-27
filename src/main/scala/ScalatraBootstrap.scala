@@ -11,8 +11,9 @@ class ScalatraBootstrap extends LifeCycle {
     val players = db("players")
     val matches = db("matches")
     val tournaments = db("tournaments")
+    val elos = db("elos")
 
-    context.mount(new PubchessController(players, matches, tournaments), "/*")
+    context.mount(new PubchessController(players, matches, tournaments, elos), "/*")
 
   }
 }

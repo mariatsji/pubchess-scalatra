@@ -10,8 +10,9 @@ import org.json4s.{DefaultFormats, Formats, Extraction}
 import org.bson.types.ObjectId
 import com.mongodb.casbah.commons.MongoDBObject
 import org.scalatra.json.JacksonJsonSupport
+import java.util.Date
 
-class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
+class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentsDB: MongoCollection, elosDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
 
   val logger = LoggerFactory.getLogger(getClass)
   protected implicit val jsonFormats: Formats = DefaultFormats
@@ -38,7 +39,9 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     contentType = formats("json")
     logger.debug("creating new player")
     parsedBody.extractOpt[Player].map { player =>
-      storePlayerInDB(player)
+      val stored = storePlayerInDB(player)
+      archiveNewElo(stored, stored.elo)
+      stored
     } match {
       case None => BadRequest
       case Some(player) => Created(player)
@@ -101,6 +104,14 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     matchesDB.insert(doc)
     mongoToMatch(doc)
   }
+
+  def updateMatchInDB(m: Match) = {
+    val query = MongoDBObject("_id" -> new ObjectId(m._id.get))
+    val doc = matchToMongo(m)
+    matchesDB.update(query, doc)
+    val returned = mongoToMatch(doc)
+    returned
+  }
   
   def getMatchFromDB(id: String) = {
     val query = MongoDBObject("_id" -> new ObjectId(id))
@@ -134,7 +145,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
   get("/tournaments") {
     contentType = formats("json")
     logger.debug("showing all tournaments")
-    tournamentDB.find().map(mongoToTournament).toList
+    tournamentsDB.find().map(mongoToTournament).toList
   }
 
   get("/tournaments/:id") {
@@ -146,7 +157,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
 
   def getTournamentFromDB(id: String) : Option[Tournament] = {
     val query = MongoDBObject("_id" -> new ObjectId(id))
-    tournamentDB.findOne(query) map mongoToTournament
+    tournamentsDB.findOne(query) map mongoToTournament
   }
 
   post("/tournaments/double") {
@@ -158,7 +169,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
       val matchesWithId: List[Match] = matches.map(storeMatchInDB)
       val newTournament: Tournament = tournament.setMatches(matchesWithId.map(_._id.get))
       val doc: DBObject = jsToMongo(Extraction.decompose(newTournament))
-      tournamentDB.insert(doc)
+      tournamentsDB.insert(doc)
       mongoToTournament(doc)
     } match {
       case None => BadRequest
@@ -175,19 +186,27 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
       val matchesWithId: List[Match] = matches.map(storeMatchInDB)
       val newTournament: Tournament = tournament.setMatches(matchesWithId.map(_._id.get))
       val doc: DBObject = jsToMongo(Extraction.decompose(newTournament))
-      tournamentDB.insert(doc)
+      tournamentsDB.insert(doc)
       mongoToTournament(doc)
     } match {
       case None => BadRequest
       case Some(t) => Created(t)
     }
   }
+
+  def archiveNewElo(player: Player, elo: Double) = {
+    val eloarch = EloArchived(None, player._id.get, new Date(), elo)
+    val doc = eloToMongo(eloarch)
+    elosDB.insert(doc)
+    mongoToElo(doc)
+  }
   
+
   put("/tournaments/commit/:id") {
     contentType = formats("json")
     val id = params("id")
     logger.debug(s"commiting tournament $id")
-    parsedBody.extractOpt[Tournament].map { tournament =>
+    getTournamentFromDB(id).map { tournament =>
       val matches = tournament.matchids.flatMap(getMatchFromDB)
       if(matches.exists(_.result == 0)) {
         None
@@ -202,7 +221,9 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
             val newEloWhite = newElos._1
             val newEloBlack = newElos._2
             white.setElo(newEloWhite)
+            archiveNewElo(white, newEloWhite)
             black.setElo(newEloBlack)
+            archiveNewElo(black, newEloBlack)
             storePlayerInDB(white)
             storePlayerInDB(black)
           }
@@ -210,7 +231,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
       }
     } match {
       case None=> BadRequest
-      case Some(m) => Ok(m)
+      case Some(t) => Ok(t)
     }
   }
 
@@ -237,9 +258,11 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
   def mongoToPlayer(obj: DBObject): Player = mongoToJs(obj).extract[Player]
   def mongoToMatch(obj: DBObject): Match = mongoToJs(obj).extract[Match]
   def mongoToTournament(obj: DBObject): Tournament = mongoToJs(obj).extract[Tournament]
+  def mongoToElo(obj: DBObject): EloArchived = mongoToJs(obj).extract[EloArchived]
   def playerToMongo(player: Player): DBObject = jsToMongo(Extraction.decompose(player))
   def matchToMongo(myMatch: Match): DBObject = jsToMongo(Extraction.decompose(myMatch))
   def tournamentToMongo(myTournament: Tournament): DBObject = jsToMongo(Extraction.decompose(myTournament))
+  def eloToMongo(elo: EloArchived): DBObject = jsToMongo(Extraction.decompose(elo))
   def jsToMongo(value: JValue): DBObject = JObjectParser.parse(value)
   def mongoToJs(obj: Any): JValue = JObjectParser.serialize(obj)
 

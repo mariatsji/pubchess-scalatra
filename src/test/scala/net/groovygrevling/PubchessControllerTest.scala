@@ -21,13 +21,15 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
   val players = db("players-test")
   val matches = db("matches-test")
   val tournaments = db("tournaments-test")
+  val elos = db("elos-test")
 
   val newPlayer = Player(None, "Sjur")
 
   val white = Player(None, "Vasja")
   val black = Player(None, "Pixie")
 
-  addFilter(new PubchessController(players, matches, tournaments), "/*")
+  private val pc: PubchessController = new PubchessController(players, matches, tournaments, elos)
+  addFilter(pc, "/*")
 
   def createPlayer(player: Player) =
     post("/players", body = write(player).getBytes, headers = Map(jsonContentType)) {
@@ -218,5 +220,30 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
     }
   }
 
+  it should "commit a tournament" in {
+    dropdbs()
 
+    val t1 = createSingleTournament("TestTournament1", List(Player(None, "Sjur"), Player(None, "Vasja"), Player(None, "Pixie")))
+
+    val matchlist = t1.matchids.flatMap(pc.getMatchFromDB)
+    
+    matchlist(0).setResult(Result.WHITE_WON)
+    matchlist(1).setResult(Result.BLACK_WON)
+    matchlist(2).setResult(Result.DRAW)
+
+    matchlist.foreach(pc.updateMatchInDB)
+
+    put("/tournaments/commit/" + t1._id.get) {
+      status must be (200)
+      t1.playerids.flatMap(pc.getPlayerFromDB).count(_.elo != 1200) must equal(0)
+    }
+  }
+
+
+  private def dropdbs() {
+    tournaments.drop()
+    matches.drop()
+    players.drop()
+    elos.drop()
+  }
 }
