@@ -28,11 +28,22 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
     playersDB.findOne(query) map mongoToPlayer
   }
 
+  def getStatsFromDB(id: String) : List[EloArchived] = {
+    val query = MongoDBObject("playerid" -> new ObjectId(id))
+    elosDB.find(query).map(mongoToElo).toList
+  }
+
   get("/players/:id") {
     contentType = formats("json")
     val id = params("id")
     logger.debug(s"finding player $id")
     getPlayerFromDB(id)
+  }
+
+  get("/players/stats/:id") {
+    contentType = formats("json")
+    val id = params("id")
+    getStatsFromDB(id)
   }
 
   post("/players") {
