@@ -98,12 +98,14 @@ function addTournamentSingle(name, participants) {
     var tournament = createTournamentObject(name, participants);
     var json = JSON.stringify(tournament);
     httpPost('/tournaments/single', json);
+    printTournaments();
 }
 
 function addTournamentDouble(name, participants) {
     var tournament = createTournamentObject(name, participants);
     var json = JSON.stringify(tournament);
     httpPost('/tournaments/double', json);
+    printTournaments();
 }
 
 function getRequestParameter(name) {
@@ -206,6 +208,15 @@ function drawPlayersSelectable(players) {
         li.appendChild(input);
         li.appendChild(document.createTextNode(player.name));
         ul.appendChild(li);
+    }
+}
+
+function printTournaments() {
+    var ul = document.getElementById('tournaments');
+    ul.innerHTML = '';
+    var tournaments = getTournaments();
+    for(var i = 0; i < tournaments.length; i++) {
+        ul.innerHTML = ul.innerHTML + printTournamentAHREF(tournaments[i]) + '<br />';
     }
 }
 
