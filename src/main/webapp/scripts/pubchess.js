@@ -1,34 +1,10 @@
-var result_white_won = 1;
-var result_black_won = 2;
-var result_draw = 3;
+function getRequestParameter(name) {
+    var retString = 'not found';
+    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search)) {
+        retString = decodeURIComponent(name[1]);
+    }
+    return retString;
 
-function getPlayer(playerid) {
-    var player = httpGet('/players/' + playerid);
-    return JSON.parse(player);
-}
-
-function getPlayers(callbackFunc) {
-    asyncGet('/players', callbackFunc);
-}
-
-function getPlayersSync() {
-    var players = httpGet('/players');
-    return JSON.parse(players);
-}
-
-function getMatch(matchid) {
-    var match = httpGet('/matches/' + matchid);
-    return JSON.parse(match);
-}
-
-function getTournaments() {
-    var tournaments = httpGet('/tournaments');
-    return JSON.parse(tournaments);
-}
-
-function getTournament(tournamentid) {
-    var tournament = httpGet('/tournaments/' + tournamentid);
-    return JSON.parse(tournament);
 }
 
 function httpGet(theUrl) {
@@ -67,14 +43,46 @@ function httpPut(theUrl, json) {
     xmlHttp.send(json);
 }
 
+var result_white_won = 1;
+var result_black_won = 2;
+var result_draw = 3;
+
+function getPlayer(playerid) {
+    var player = httpGet('/players/' + playerid);
+    return JSON.parse(player);
+}
+
+function getPlayers(callbackFunc) {
+    asyncGet('/players', callbackFunc);
+}
+
+function getPlayersSync() {
+    var players = httpGet('/players');
+    return JSON.parse(players);
+}
+
+function getMatch(matchid) {
+    var match = httpGet('/matches/' + matchid);
+    return JSON.parse(match);
+}
+
+function getTournaments() {
+    var tournaments = httpGet('/tournaments');
+    return JSON.parse(tournaments);
+}
+
+function getTournament(tournamentid) {
+    var tournament = httpGet('/tournaments/' + tournamentid);
+    return JSON.parse(tournament);
+}
+
 function addPlayer(name) {
     var player = {};
     player ['name'] = name;
     player ['elo'] = '1200';
     var json = JSON.stringify(player);
     httpPost('/players', json);
-    var players = getPlayersSync();
-    drawPlayers(players);
+    drawPlayers(getPlayersSync());
 }
 
 function createTournamentObject(name, participants) {
@@ -108,15 +116,6 @@ function addTournamentDouble(name, participants) {
     printTournaments();
 }
 
-function getRequestParameter(name) {
-    var retString = 'not found';
-    if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search)) {
-        retString = decodeURIComponent(name[1]);
-    }
-    return retString;
-
-}
-
 function printMatchResult(match) {
     var retString = '-';
 
@@ -148,16 +147,12 @@ function saveMatchResult(matchid, result) {
     location.reload(true);
 }
 
-function getPlayersSelectable() {
-    var players = getPlayers();
-}
-
 function printTournamentAHREF(tournament) {
     return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date  + ')';
 }
 
 function printTournamentresultAHREF(tournament) {
-    return '<a href=\"tournamentresult.html?id=' + tournament._id + '\">' + tournament.name + '</a><br />';
+    return '<a href=\"tournamentresult.html?id=' + tournament._id + '\">' + tournament.name + '</a>';
 }
 
 function printCommitButton(tournament) {
@@ -229,11 +224,19 @@ function drawResults(tournamentid) {
         players[i] = getPlayer(tournament.playerids[i]);
         results[i] = calculatePoints(players[i], matches);
     }
+    results.sort(sortResults);
     for (var i = 0 ; i < results.length; i ++) {
         var li = document.createElement('li');
         li.appendChild(document.createTextNode(printResult(results[i])));
         ol.appendChild(li);
     }
+}
+
+function sortResults(resulta, resultb) {
+    if (resulta.points == resultb.points) {
+        return resultb.blackwins - resulta.blackwins;
+    }
+    return resultb.points - resulta.points;
 }
 
 
@@ -275,10 +278,6 @@ function printResult(result) {
     + result.blackwins + ' with black, '
     + result.draws + ' remis)';
     return txt;
-}
-
-function sortByPoints(matches) {
-    return matches;
 }
 
 function printTournaments() {
