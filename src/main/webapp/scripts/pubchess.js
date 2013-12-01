@@ -61,6 +61,11 @@ function getPlayersSync() {
     return JSON.parse(players);
 }
 
+function getStats(playerid) {
+    var elos = httpGet('/players/stats/' + playerid);
+    return JSON.parse(elos);
+}
+
 function getMatch(matchid) {
     var match = httpGet('/matches/' + matchid);
     return JSON.parse(match);

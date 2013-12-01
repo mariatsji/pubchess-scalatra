@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="scripts/pubchess.js"></script>
+    <script src="scripts/stats.js"></script>
+</head>
+<body>
+<h1>Pubchess</h1>
+
+<script>
+    var elos = getStats(getRequestParameter('id'));
+    var minelo = stats.minElo(elos);
+    var maxelo = stats.maxElo(elos);
+    var mindate = stats.minDate(elos);
+    var maxdate = stats.maxDate(elos);
+</script>
+
+
+<p>
+    <a href="tournaments.html">Tournaments</a>
+</p>
+
+</body>
+</html>
