@@ -185,7 +185,10 @@ function drawPlayers(players) {
     ul.innerHTML = '';
     for (var i = 0 ; i < players.length ; i++){
         var li = document.createElement('li');
-        li.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
+        var a = document.createElement('a');
+        a.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
+        a.setAttribute('href', 'player.html?id=' + players[i]._id);
+        li.appendChild(a);
         ul.appendChild(li);
     }
 }
@@ -204,4 +207,11 @@ function drawPlayersSelectable(players) {
         li.appendChild(document.createTextNode(player.name));
         ul.appendChild(li);
     }
+}
+
+function showPlayerDetails(playerid) {
+    var player = getPlayer(playerid);
+    var div = document.getElementById('player');
+    var text = '' + player.name + ' : ' + player._id + ' (' + player.elo.toFixed(0) + ')';
+    div.appendChild(document.createTextNode(text));
 }
