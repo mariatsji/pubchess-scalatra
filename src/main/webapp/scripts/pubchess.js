@@ -7,8 +7,13 @@ function getPlayer(playerid) {
     return JSON.parse(player);
 }
 
-function getPlayers() {
-    asyncGet('/players', getPlayersCallback);
+function getPlayers(callbackFunc) {
+    asyncGet('/players', callbackFunc);
+}
+
+function getPlayersSync() {
+    var players = httpGet('/players');
+    return JSON.parse(players);
 }
 
 function getMatch(matchid) {
@@ -42,22 +47,24 @@ function asyncGet(theUrl, callbackFunction) {
 
 function httpPost(theUrl, json) {
     var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('POST', theUrl, false);
+    xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
+    xmlHttp.send(json);
+}
+
+function asyncPost(theUrl, json, callbackFunction) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = callbackFunction;
     xmlHttp.open('POST', theUrl, true);
     xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
     xmlHttp.send(json);
-    xmlHttp.onloadend = function () {
-        console.log('completed sending new player');
-    }
 }
 
 function httpPut(theUrl, json) {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open('PUT', theUrl, true);
+    xmlHttp.open('PUT', theUrl, false);
     xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
     xmlHttp.send(json);
-    xmlHttp.onloadend = function () {
-        console.log('completed sending new player');
-    }
 }
 
 function addPlayer(name) {
@@ -65,8 +72,9 @@ function addPlayer(name) {
     player ['name'] = name;
     player ['elo'] = '1200';
     var json = JSON.stringify(player);
-
-    httpPost('/players', json)
+    httpPost('/players', json);
+    var players = getPlayersSync();
+    drawPlayers(players);
 }
 
 function createTournamentObject(name, participants) {
@@ -137,6 +145,9 @@ function saveMatchResult(matchid, result) {
     httpPut('/matches/' + matchid, json);
 }
 
+function getPlayersSelectable() {
+    var players = getPlayers();
+}
 
 function printTournamentAHREF(tournament) {
     return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date  + ')';
@@ -150,17 +161,38 @@ function commitTournament(tournamentid) {
     httpPut("/tournaments/commit/" + tournamentid);
 }
 
-var getPlayersCallback = function() {
+var drawPlayersLICallback = function() {
     if(this.readyState == this.DONE) {
         drawPlayers(JSON.parse(this.response));
     }
 };
 
+
+function drawPlayersSelectable(players) {
+    for (var i = 0; i < players.length; i++) {
+        drawPlayerSelectable(players[i]);
+    }
+}
+
+var drawPlayersSelectableCallback = function() {
+    if(this.readyState == this.DONE) {
+        drawPlayersSelectable(JSON.parse(this.response));
+    }
+};
+
 function drawPlayers(players) {
+    var ul = document.getElementById('players');
+    ul.innerHTML = '';
+    ul.removeChildren
     for (var i = 0 ; i < players.length ; i++){
-        var ul = document.getElementById('players');
         var li = document.createElement('li');
         li.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
         ul.appendChild(li);
     }
+}
+
+function drawPlayerSelectable(player) {
+    document.write(
+    '<input type=\"checkbox\" name=\"participants\" value=\"' + player._id + '"\">' + player.name + ' (' + player.elo + ') </input>'
+    );
 }

@@ -6,11 +6,17 @@
 <body>
 <h1>Pubchess</h1>
 
+<script>
+    getPlayers(drawPlayersSelectableCallback);
+</script>
+
 <p>
     <input type="text" id="tournamentname"/>
     <button type="button" onclick="addTournamentSingle(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Single Tournament</button>
     <button type="button" onclick="addTournamentDouble(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Double Tournament</button>
 </p>
+
+<ul id="players" />
 
 <ul>
     <script>
