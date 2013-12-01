@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="scripts/pubchess.js"></script>
+</head>
+<body>
+<h1>Pubchess</h1>
+
+<ol id="result"></ol>
+
+<script>
+    drawResults(getRequestParameter('id'));
+</script>
+
+<p>
+    <script>
+        document.write(
+            printTournamentAHREF(getTournament(getRequestParameter('id'))) + '<br />'
+        );
+    </script>
+    <a href="/">Players</a><br />
+    <a href="tournaments.html">Tournaments</a>
+</p>
+
+</body>
+</html>

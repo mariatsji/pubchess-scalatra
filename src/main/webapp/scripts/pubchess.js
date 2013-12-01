@@ -145,6 +145,7 @@ function saveMatchResult(matchid, result) {
     fullMatch.result = result;
     var json = JSON.stringify(fullMatch);
     httpPut('/matches/' + matchid, json);
+    location.reload(true);
 }
 
 function getPlayersSelectable() {
@@ -153,6 +154,10 @@ function getPlayersSelectable() {
 
 function printTournamentAHREF(tournament) {
     return '<a href=\"tournament.html?id=' + tournament._id + '\">' + tournament.name + '</a> (' + tournament.date  + ')';
+}
+
+function printTournamentresultAHREF(tournament) {
+    return '<a href=\"tournamentresult.html?id=' + tournament._id + '\">' + tournament.name + '</a><br />';
 }
 
 function printCommitButton(tournament) {
@@ -168,7 +173,6 @@ var drawPlayersLICallback = function() {
         drawPlayers(JSON.parse(this.response));
     }
 };
-
 
 function drawPlayersSelectable(players) {
     for (var i = 0; i < players.length; i++) {
@@ -209,6 +213,72 @@ function drawPlayersSelectable(players) {
         li.appendChild(document.createTextNode(player.name));
         ul.appendChild(li);
     }
+}
+
+function drawResults(tournamentid) {
+    var ol = document.getElementById('result');
+    ol.innerHTML = '';
+    var tournament = getTournament(tournamentid);
+    var matches = new Array();
+    for (var i = 0 ; i < tournament.matchids.length ; i ++) {
+        matches[i] = getMatch(tournament.matchids[i]);
+    }
+    var players = new Array();
+    var results = new Array();
+    for (var i = 0 ; i < tournament.playerids.length; i ++) {
+        players[i] = getPlayer(tournament.playerids[i]);
+        results[i] = calculatePoints(players[i], matches);
+    }
+    for (var i = 0 ; i < results.length; i ++) {
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(printResult(results[i])));
+        ol.appendChild(li);
+    }
+}
+
+
+function calculatePoints(player, matches) {
+    var points = 0;
+    var whitewins = 0;
+    var blackwins = 0;
+    var draws = 0;
+    for (var i = 0 ; i < matches.length; i ++) {
+        var match = matches[i];
+        if(match.result == result_draw) {
+            points = points + 0.5;
+            draws = draws + 1;
+        } else if ((match.result == result_white_won) && (match.white_id == player._id)) {
+            points = points + 1;
+            whitewins = whitewins + 1;
+        } else if ((match.result == result_black_won) && (match.black_id == player._id)) {
+            points = points + 1;
+            blackwins = blackwins + 1;
+        }
+    }
+    return createResultObject(player, points, whitewins, blackwins, draws);
+}
+
+function createResultObject(player, points, whitewins, blackwins, draws) {
+    var result = new Object();
+    result.player = player;
+    result.points = points;
+    result.whitewins = whitewins;
+    result.blackwins = blackwins;
+    result.draws = draws;
+    return result;
+}
+
+function printResult(result) {
+    var txt = result.player.name
+    + ' (' + result.player.elo.toFixed(0) + ') '
+    + result.points + ' (' + result.whitewins + ' wins with white, '
+    + result.blackwins + ' with black, '
+    + result.draws + ' remis)';
+    return txt;
+}
+
+function sortByPoints(matches) {
+    return matches;
 }
 
 function printTournaments() {
