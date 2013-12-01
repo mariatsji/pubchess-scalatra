@@ -183,7 +183,6 @@ var drawPlayersSelectableCallback = function() {
 function drawPlayers(players) {
     var ul = document.getElementById('players');
     ul.innerHTML = '';
-    ul.removeChildren
     for (var i = 0 ; i < players.length ; i++){
         var li = document.createElement('li');
         li.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
@@ -191,8 +190,18 @@ function drawPlayers(players) {
     }
 }
 
-function drawPlayerSelectable(player) {
-    document.write(
-    '<input type=\"checkbox\" name=\"participants\" value=\"' + player._id + '"\">' + player.name + ' (' + player.elo + ') </input>'
-    );
+function drawPlayersSelectable(players) {
+    var ul = document.getElementById('players');
+    ul.innerHTML = '';
+    for (var i = 0 ; i < players.length ; i++){
+        var player = players[i];
+        var li = document.createElement('li');
+        var input = document.createElement('input');
+        input.setAttribute('type', 'checkbox');
+        input.setAttribute('name', 'participants');
+        input.setAttribute('value', player._id);
+        li.appendChild(input);
+        li.appendChild(document.createTextNode(player.name));
+        ul.appendChild(li);
+    }
 }

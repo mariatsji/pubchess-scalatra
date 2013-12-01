@@ -9,6 +9,9 @@
 <script>
     getPlayers(drawPlayersSelectableCallback);
 </script>
+<p>
+    <ul id="players" ></ul>
+</p>
 
 <p>
     <input type="text" id="tournamentname"/>
@@ -16,9 +19,8 @@
     <button type="button" onclick="addTournamentDouble(document.getElementById('tournamentname').value, document.getElementsByName('participants'));">Double Tournament</button>
 </p>
 
-<ul id="players" />
-
-<ul>
+<p>
+<ul id="tournaments">
     <script>
         var tournaments = getTournaments();
         for(var i = 0; i < tournaments.length; i++) {
@@ -28,6 +30,7 @@
         }
     </script>
 </ul>
+</p>
 
 <p>
     <a href="/">Players</a>
