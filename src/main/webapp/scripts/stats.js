@@ -9,8 +9,7 @@ var stats = {
 
     minElo: function(elos) {
         if(elos.length > 0) {
-            elos.sort(this.sortElos);
-            return elos[0];
+            return elos.sort(this.sortElos)[0];
         } else {
             return 0;
         }
@@ -18,24 +17,25 @@ var stats = {
 
     maxElo: function(elos) {
         if(elos.length > 0) {
-            elos.sort(sortElos).reverse;
-            return elos[0];
+            return elos.sort(stats.sortElos).reverse()[0];
         } else {
             return 0;
         }
     },
 
     datify: function(dateString) {
-        var parts = dateString.split('Z');
-        var date1 = dateString[0];
-        var time1 = dateString[1];
+        var parts = dateString.split('Z')[0].split('T');
+        var date1 = parts[0];
+        var time1 = parts[1];
         var dateparts = date1.split('-');
         var timeparts = time1.split(':');
         return new Date(dateparts[0], dateparts[1], dateparts[2], timeparts[0], timeparts[1], timeparts[2]);
-    }
+    },
 
     sortDates: function(eloa, elob) {
-        if(datify(eloa.date) < datify(elob.date)) {
+        var a = stats.datify(eloa.date);
+        var b = stats.datify(elob.date);
+        if(a.getTime() < b.getTime()) {
             return -1;
         } else {
             return 1;
@@ -44,8 +44,7 @@ var stats = {
 
     minDate: function(elos) {
         if(elos.length > 0) {
-            dates.sort(sortDates);
-            return elos[0];
+            return elos.sort(stats.sortDates)[0];
         } else {
             return 0;
         }
@@ -53,11 +52,10 @@ var stats = {
 
     maxDate: function(elos) {
         if(elos.length > 0) {
-            elos.sort(sortDates).reverse;
-            return elos[0];
+            return elos.sort(stats.sortDates).reverse()[0];
         } else {
             return 0;
         }
-    },
+    }
 
 };

@@ -10,7 +10,7 @@ import org.json4s.{DefaultFormats, Formats, Extraction}
 import org.bson.types.ObjectId
 import com.mongodb.casbah.commons.MongoDBObject
 import org.scalatra.json.JacksonJsonSupport
-import java.util.Date
+import java.util.{Calendar, Date}
 
 class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentsDB: MongoCollection, elosDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
 
@@ -212,7 +212,7 @@ class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection,
   }
 
   def archiveNewElo(player: Player, elo: Double) = {
-    val eloarch = EloArchived(None, player._id.get, new Date(), elo)
+    val eloarch = EloArchived(None, player._id.get, Calendar.getInstance().getTime, elo)
     val doc = eloToMongo(eloarch)
     elosDB.insert(doc)
     mongoToElo(doc)

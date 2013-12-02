@@ -10,9 +10,13 @@
 <script>
     var elos = getStats(getRequestParameter('id'));
     var minelo = stats.minElo(elos);
+    console.log('minelo : ' + minelo.elo);
     var maxelo = stats.maxElo(elos);
+    console.log('maxelo : ' + maxelo.elo);
     var mindate = stats.minDate(elos);
+    console.log('mindate : ' + mindate.date);
     var maxdate = stats.maxDate(elos);
+    console.log('maxdate : ' + maxdate.date);
 </script>
 
 

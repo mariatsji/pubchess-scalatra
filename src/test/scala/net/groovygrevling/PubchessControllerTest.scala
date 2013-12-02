@@ -7,7 +7,7 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.slf4j.LoggerFactory
 import com.mongodb.casbah.Imports._
-import java.util.Date
+import java.util.{Calendar, Date}
 
 class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
@@ -63,7 +63,7 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
   def createDoubleTournament(name: String, players: List[Player]): Tournament = {
     val playersWithId = players.distinct.map(createPlayer)
-    val tournament = Tournament(None, name, new Date(), playersWithId.map(_._id.get), List())
+    val tournament = Tournament(None, name, Calendar.getInstance().getTime, playersWithId.map(_._id.get), List())
     createDoubleTournament(tournament)
   }
 
@@ -77,7 +77,7 @@ class PubchessControllerTest extends ScalatraFlatSpec with ShouldMatchers {
 
   def createSingleTournament(name: String, players: List[Player]): Tournament = {
     val playersWithId = players.distinct.map(createPlayer)
-    val tournament = Tournament(None, name, new Date(), playersWithId.map(_._id.get), List())
+    val tournament = Tournament(None, name, Calendar.getInstance().getTime, playersWithId.map(_._id.get), List())
     createSingleTournament(tournament)
   }
 
