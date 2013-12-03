@@ -191,12 +191,17 @@ function drawPlayers(players) {
     ul.innerHTML = '';
     for (var i = 0 ; i < players.length ; i++){
         var li = document.createElement('li');
-        var a = document.createElement('a');
-        a.appendChild(document.createTextNode(players[i].name + ' (' + players[i].elo.toFixed(0) + ')'));
-        a.setAttribute('href', 'player.html?id=' + players[i]._id);
+        var a = createPlayerLink(players[i]);
         li.appendChild(a);
         ul.appendChild(li);
     }
+}
+
+function createPlayerLink(player) {
+    var a = document.createElement('a');
+    a.appendChild(document.createTextNode(player.name + ' (' + player.elo.toFixed(0) + ')'));
+    a.setAttribute('href', 'player.html?id=' + player._id);
+    return a;
 }
 
 function drawPlayersSelectable(players) {

@@ -2,6 +2,7 @@
 <html>
 <head>
     <script src="scripts/pubchess.js"></script>
+    <script src="scripts/stats.js"></script>
 </head>
 <body>
 <h1>Pubchess</h1>
@@ -12,9 +13,30 @@
     showPlayerDetails(getRequestParameter('id'));
 </script>
 
+<script>
+    var elos = getStats(getRequestParameter('id'));
+    var minelo = stats.minElo(elos);
+    console.log('minelo : ' + minelo.elo);
+    var maxelo = stats.maxElo(elos);
+    console.log('maxelo : ' + maxelo.elo);
+    var mindate = stats.minDate(elos);
+    console.log('mindate : ' + mindate.date);
+    var maxdate = stats.maxDate(elos);
+    console.log('maxdate : ' + maxdate.date);
+</script>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="20cm" height="9cm" version="1.1" id="graf">
+    <line x1="40" y1="10" x2="40" y2="300" style="stroke:rgb(0,0,0);stroke-width:3"/>
+    <line x1="40" y1="300" x2="600" y2="300" style="stroke:rgb(0,0,0);stroke-width:3"/>
+    <text x="0" y="290" fill="red">minElo</text>
+    <text x="0" y="15" fill="red">maxElo</text>
+    <text x="40" y="320" fill="red">minDate</text>
+    <text x="550" y="320" fill="red">maxDate</text>
+</svg>
+
 <p>
-   <a href="/">Home</a> </br>
-    <a href="tournaments.html">Tournaments</a>
+   <br /><a href="/">Home</a>
+   <br /><a href="tournaments.html">Tournaments</a>
 </p>
 
 </body>
