@@ -18,26 +18,39 @@
 <script>
     var elos = getStats(getRequestParameter('id'));
     var minelo = stats.minElo(elos);
-    console.log('minelo : ' + minelo.elo);
     var maxelo = stats.maxElo(elos);
-    console.log('maxelo : ' + maxelo.elo);
     var mindate = stats.minDate(elos);
-    console.log('mindate : ' + mindate.date);
     var maxdate = stats.maxDate(elos);
-    console.log('maxdate : ' + maxdate.date);
     var graf = document.getElementById('graf');
-    var yaxis = stats.line(40, 10, 40, 300);
-    var xaxis = stats.line(40, 300, 600, 300);
-    var label1 = stats.text(minelo.elo, 0, 290);
-    var label2 = stats.text(maxelo.elo, 0, 15);
-    var label3 = stats.text(stats.striptime(mindate.date), 40, 320);
-    var label4 = stats.text(stats.striptime(maxdate.date), 550, 320);
+    var xoffset = 40;
+    var yoffset = 10;
+    var height = 300;
+    var width = 600;
+    var yaxis = stats.line(xoffset, yoffset, xoffset, height);
+    var xaxis = stats.line(xoffset, height, width, height);
+    var label1 = stats.text(minelo.elo.toFixed(0), xoffset - 40, height - 10);
+    var label2 = stats.text(maxelo.elo.toFixed(0), xoffset - 40, yoffset + 5);
+    var label3 = stats.text(stats.striptime(mindate.date), xoffset, height + 20);
+    var label4 = stats.text(stats.striptime(maxdate.date), width - 50, height + 20);
     graf.appendChild(xaxis);
     graf.appendChild(yaxis);
     graf.appendChild(label1);
     graf.appendChild(label2);
     graf.appendChild(label3);
     graf.appendChild(label4);
+    if(elos.length > 0) {
+        var last = new Array();
+        //x
+        last[0] = elos[0].elo.toFixed(0);
+        //y
+        last[1] = yoffset;
+        for (var i = 0; i < elos.length; i++) {
+            var next = stats.nextDestination(height, width, elos, i, minelo, maxelo);
+            graf.appendChild(stats.line(last[0], last[1], next[0], next[1]));
+            last[0] = next[0];
+            last[1] = next[1];
+        }
+    }
 </script>
 
 <p>

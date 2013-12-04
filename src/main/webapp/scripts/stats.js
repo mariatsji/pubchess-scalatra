@@ -79,6 +79,26 @@ var stats = {
 
     striptime: function(datestring) {
         return datestring.split('T')[0];
+    },
+
+    nextDestination: function(height, width, elos, index, minelo, maxelo) {
+        var x = stats.toX(elos[index], height, minelo, maxelo);
+        var y = stats.toY(elos, width, index);
+        var retVal = new Array();
+        retVal[0] = x;
+        retVal[1] = y;
+        return retVal;
+    },
+
+    toX: function(elo, height, minElo, maxElo) {
+        var heightPrElo = (height/(maxElo.elo - minElo.elo)).toFixed(0);
+        var retVal = (height - (heightPrElo / elo.elo)).toFixed(0);
+        return retVal;
+    },
+
+    toY: function(elos, width, index) {
+        return (elos.length / width).toFixed(0) * index;
     }
+
 
 };
