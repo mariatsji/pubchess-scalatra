@@ -56,6 +56,29 @@ var stats = {
         } else {
             return 0;
         }
+    },
+
+    line: function(x1, y1, x2, y2) {
+        var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('style', 'stroke:rgb(0,0,0);stroke-width:3');
+        return line;
+    },
+
+    text: function(textstring, x, y) {
+        var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute('x', x);
+        text.setAttribute('y', y);
+        text.setAttribute('fill', 'black');
+        text.appendChild(document.createTextNode(textstring));
+        return text;
+    },
+
+    striptime: function(datestring) {
+        return datestring.split('T')[0];
     }
 
 };

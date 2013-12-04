@@ -13,6 +13,8 @@
     showPlayerDetails(getRequestParameter('id'));
 </script>
 
+<svg xmlns="http://www.w3.org/2000/svg" width="20cm" height="9cm" version="1.1" id="graf"></svg>
+
 <script>
     var elos = getStats(getRequestParameter('id'));
     var minelo = stats.minElo(elos);
@@ -23,16 +25,20 @@
     console.log('mindate : ' + mindate.date);
     var maxdate = stats.maxDate(elos);
     console.log('maxdate : ' + maxdate.date);
+    var graf = document.getElementById('graf');
+    var yaxis = stats.line(40, 10, 40, 300);
+    var xaxis = stats.line(40, 300, 600, 300);
+    var label1 = stats.text(minelo.elo, 0, 290);
+    var label2 = stats.text(maxelo.elo, 0, 15);
+    var label3 = stats.text(stats.striptime(mindate.date), 40, 320);
+    var label4 = stats.text(stats.striptime(maxdate.date), 550, 320);
+    graf.appendChild(xaxis);
+    graf.appendChild(yaxis);
+    graf.appendChild(label1);
+    graf.appendChild(label2);
+    graf.appendChild(label3);
+    graf.appendChild(label4);
 </script>
-
-<svg xmlns="http://www.w3.org/2000/svg" width="20cm" height="9cm" version="1.1" id="graf">
-    <line x1="40" y1="10" x2="40" y2="300" style="stroke:rgb(0,0,0);stroke-width:3"/>
-    <line x1="40" y1="300" x2="600" y2="300" style="stroke:rgb(0,0,0);stroke-width:3"/>
-    <text x="0" y="290" fill="red">minElo</text>
-    <text x="0" y="15" fill="red">maxElo</text>
-    <text x="40" y="320" fill="red">minDate</text>
-    <text x="550" y="320" fill="red">maxDate</text>
-</svg>
 
 <p>
    <br /><a href="/">Home</a>
