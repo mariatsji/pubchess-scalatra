@@ -82,22 +82,22 @@ var stats = {
     },
 
     nextDestination: function(height, width, elos, index, minelo, maxelo) {
-        var x = stats.toX(elos[index], height, minelo, maxelo);
-        var y = stats.toY(elos, width, index);
-        var retVal = new Array();
+        var x = parseFloat(stats.toX(elos, width, index)).toFixed(0);
+        var y = parseFloat(stats.toY(elos[index], height, minelo, maxelo)).toFixed(0);
+        var retVal = [];
         retVal[0] = x;
         retVal[1] = y;
         return retVal;
     },
 
-    toX: function(elo, height, minElo, maxElo) {
-        var heightPrElo = (height/(maxElo.elo - minElo.elo)).toFixed(0);
-        var retVal = (height - (heightPrElo / elo.elo)).toFixed(0);
-        return retVal;
+    toY: function(elo, height, minElo, maxElo) {
+        var heightPrElo = (height/(maxElo.elo - minElo.elo));
+        var retVal = ((maxElo.elo - elo.elo) * heightPrElo);
+        return parseFloat(retVal).toFixed(0);
     },
 
-    toY: function(elos, width, index) {
-        return (elos.length / width).toFixed(0) * index;
+    toX: function(elos, width, index) {
+        return (width / elos.length) * index;
     }
 
 
