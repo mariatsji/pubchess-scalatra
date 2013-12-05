@@ -7,13 +7,20 @@
 <body>
 <h1>Pubchess</h1>
 
+<p>
+<h2>Stats</h2>
 <div id="player"></div>
 
 <script>
-    showPlayerDetails(getRequestParameter('id'));
-</script>
+        showPlayerDetails(getRequestParameter('id'));
+    </script>
+    <br />
+</p>
 
-<svg xmlns="http://www.w3.org/2000/svg" width="20cm" height="9cm" version="1.1" id="graf"></svg>
+<p>
+    <h2>Relative elo</h2>
+</p>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="graf"></svg>
 
 <script>
     var elos = getStats(getRequestParameter('id'));
@@ -39,9 +46,9 @@
     graf.appendChild(label3);
     graf.appendChild(label4);
     if(elos.length > 0) {
-        var last = stats.nextDestination(height, width, elos, 0, minelo, maxelo);
+        var last = stats.nextDestination(height, width, elos, 0, minelo, maxelo, xoffset, yoffset - 10);
         for (var i = 1; i < elos.length; i++) {
-            var next = stats.nextDestination(height, width, elos, i, minelo, maxelo);
+            var next = stats.nextDestination(height, width, elos, i, minelo, maxelo, xoffset, yoffset - 10);
             var x1 = last[0];
             var y1 = last[1];
             var x2 = next[0];

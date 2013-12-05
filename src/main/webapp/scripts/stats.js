@@ -81,23 +81,23 @@ var stats = {
         return datestring.split('T')[0];
     },
 
-    nextDestination: function(height, width, elos, index, minelo, maxelo) {
-        var x = parseFloat(stats.toX(elos, width, index)).toFixed(0);
-        var y = parseFloat(stats.toY(elos[index], height, minelo, maxelo)).toFixed(0);
+    nextDestination: function(height, width, elos, index, minelo, maxelo, xoffset, yoffset) {
+        var x = parseFloat(stats.toX(elos, width, index, xoffset)).toFixed(0);
+        var y = parseFloat(stats.toY(elos[index], height, minelo, maxelo, yoffset)).toFixed(0);
         var retVal = [];
         retVal[0] = x;
         retVal[1] = y;
         return retVal;
     },
 
-    toY: function(elo, height, minElo, maxElo) {
+    toY: function(elo, height, minElo, maxElo, yoffset) {
         var heightPrElo = (height/(maxElo.elo - minElo.elo));
-        var retVal = ((maxElo.elo - elo.elo) * heightPrElo);
-        return parseFloat(retVal).toFixed(0);
+        var retVal = ((maxElo.elo - elo.elo) * heightPrElo) + yoffset;
+        return retVal;
     },
 
-    toX: function(elos, width, index) {
-        return (width / elos.length) * index;
+    toX: function(elos, width, index, xoffset) {
+        return ((width / elos.length) * index) + xoffset;
     }
 
 
