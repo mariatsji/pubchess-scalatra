@@ -24,4 +24,18 @@ object Elo {
       (0f,1f)
     else
       (0.5f, 0.5f)
+
+  /**
+   * FIDE rules:
+   * K = 30 (was 25) for a player new to the rating list until s/he has completed events with a total of at least 30 games.[15]
+   * K = 15 as long as a player's rating remains under 2400.
+   * K = 10 once a player's published rating has reached 2400, and s/he has also completed events with a total of at least 30 games. Thereafter it remains permanently at 10.
+   */
+  def getKfactor(matches: List[Match], player: Player): Long = {
+    def playedMatches: Int = matches.size
+    if (playedMatches < 30) 30
+    else {
+      if(player.elo < 2400) 15 else 10
+    }
+  }
 }

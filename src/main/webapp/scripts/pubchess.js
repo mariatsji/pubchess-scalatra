@@ -28,14 +28,6 @@ function httpPost(theUrl, json) {
     xmlHttp.send(json);
 }
 
-function asyncPost(theUrl, json, callbackFunction) {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = callbackFunction;
-    xmlHttp.open('POST', theUrl, true);
-    xmlHttp.setRequestHeader('Content-type', 'application/json; charset=UTF-8');
-    xmlHttp.send(json);
-}
-
 function httpPut(theUrl, json) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open('PUT', theUrl, false);
@@ -175,19 +167,13 @@ var drawPlayersLICallback = function() {
     if(this.readyState == this.DONE) {
         drawPlayers(JSON.parse(this.response));
     }
-};
-
-function drawPlayersSelectable(players) {
-    for (var i = 0; i < players.length; i++) {
-        drawPlayerSelectable(players[i]);
-    }
 }
 
 var drawPlayersSelectableCallback = function() {
     if(this.readyState == this.DONE) {
         drawPlayersSelectable(JSON.parse(this.response));
     }
-};
+}
 
 function drawPlayers(players) {
     var ul = document.getElementById('players');
@@ -227,20 +213,20 @@ function drawResults(tournamentid) {
     var ol = document.getElementById('result');
     ol.innerHTML = '';
     var tournament = getTournament(tournamentid);
-    var matches = new Array();
+    var matches = [];
     for (var i = 0 ; i < tournament.matchids.length ; i ++) {
         matches[i] = getMatch(tournament.matchids[i]);
     }
-    var players = new Array();
-    var results = new Array();
-    for (var i = 0 ; i < tournament.playerids.length; i ++) {
-        players[i] = getPlayer(tournament.playerids[i]);
-        results[i] = calculatePoints(players[i], matches);
+    var players = [];
+    var results = [];
+    for (var j = 0 ; j < tournament.playerids.length; j ++) {
+        players[j] = getPlayer(tournament.playerids[j]);
+        results[j] = calculatePoints(players[j], matches);
     }
     results.sort(sortResults);
-    for (var i = 0 ; i < results.length; i ++) {
+    for (var k = 0 ; k < results.length; k ++) {
         var li = document.createElement('li');
-        li.appendChild(document.createTextNode(printResult(results[i])));
+        li.appendChild(document.createTextNode(printResult(results[k])));
         ol.appendChild(li);
     }
 }
@@ -275,7 +261,7 @@ function calculatePoints(player, matches) {
 }
 
 function createResultObject(player, points, whitewins, blackwins, draws) {
-    var result = new Object();
+    var result = {};
     result.player = player;
     result.points = points;
     result.whitewins = whitewins;
@@ -285,12 +271,11 @@ function createResultObject(player, points, whitewins, blackwins, draws) {
 }
 
 function printResult(result) {
-    var txt = result.player.name
+    return result.player.name
     + ' (' + result.player.elo.toFixed(0) + ') '
     + result.points + ' (' + result.whitewins + ' wins with white, '
     + result.blackwins + ' with black, '
     + result.draws + ' remis)';
-    return txt;
 }
 
 function printTournaments() {

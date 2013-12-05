@@ -1,6 +1,3 @@
-// http://localhost:7002/players/stats/52927a0e03ce66b5d1f6fc4e
-//http://localhost:7002/stats.html?id=52927a0e03ce66b5d1f6fc4e
-// {"_id":"529638a603ce4c071c0f2077","playerid":"52927a0e03ce66b5d1f6fc4e","date":"2013-11-27T18:23:34Z","elo":1185.0}
 var stats = {
 
     sortElos: function(eloa, elob) {
