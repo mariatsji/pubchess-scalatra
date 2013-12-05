@@ -165,7 +165,10 @@ function printCommitButton(tournament) {
 }
 
 function commitTournament(tournamentid) {
-    httpPut("/tournaments/commit/" + tournamentid);
+    var r = confirm("Sure you want to commit?");
+    if (r==true) {
+        httpPut("/tournaments/commit/" + tournamentid);
+    }
 }
 
 var drawPlayersLICallback = function() {
