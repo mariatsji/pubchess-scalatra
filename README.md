@@ -5,6 +5,7 @@ A scalatra, scala, mongoDB based webapp for
 * drawing fair(!) tournaments (single or double)
 * saving internal elo for each player
 * showing simple graphics for players elo rating
+
 Has no
 * pretty front-end
 * authentication, authorization
