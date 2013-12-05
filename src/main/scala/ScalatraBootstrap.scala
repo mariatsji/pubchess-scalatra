@@ -1,5 +1,5 @@
 import com.mongodb.casbah.Imports._
-import net.groovygrevling.{PubchessController}
+import net.groovygrevling.PubchessController
 import org.scalatra._
 import javax.servlet.ServletContext
 

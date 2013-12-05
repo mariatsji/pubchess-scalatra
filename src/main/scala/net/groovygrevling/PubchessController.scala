@@ -10,7 +10,7 @@ import org.json4s.{DefaultFormats, Formats, Extraction}
 import org.bson.types.ObjectId
 import com.mongodb.casbah.commons.MongoDBObject
 import org.scalatra.json.JacksonJsonSupport
-import java.util.{Calendar, Date}
+import java.util.Calendar
 
 class PubchessController(playersDB: MongoCollection, matchesDB: MongoCollection, tournamentsDB: MongoCollection, elosDB: MongoCollection) extends ScalatraFilter with JacksonJsonSupport {
 
