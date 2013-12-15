@@ -34,8 +34,8 @@
     var xaxis = stats.line(xoffset, height, width, height);
     var label1 = stats.text(minelo.elo.toFixed(0), xoffset - 40, height - 10);
     var label2 = stats.text(maxelo.elo.toFixed(0), xoffset - 40, yoffset + 5);
-    var label3 = stats.text(stats.striptime(mindate.date), xoffset, height + 20);
-    var label4 = stats.text(stats.striptime(maxdate.date), width - 50, height + 20);
+    var label3 = stats.text(stats.striptime(maxdate.date), xoffset, height + 20);
+    var label4 = stats.text(stats.striptime(mindate.date), width - 50, height + 20);
     graf.appendChild(xaxis);
     graf.appendChild(yaxis);
     graf.appendChild(label1);

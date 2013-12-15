@@ -246,7 +246,7 @@ function calculatePoints(player, matches) {
     var draws = 0;
     for (var i = 0 ; i < matches.length; i ++) {
         var match = matches[i];
-        if(match.result == result_draw) {
+        if(((match.white_id == player._id) || (match.black_id == player._id)) && match.result == result_draw) {
             points = points + 0.5;
             draws = draws + 1;
         } else if ((match.result == result_white_won) && (match.white_id == player._id)) {

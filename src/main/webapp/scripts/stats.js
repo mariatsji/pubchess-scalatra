@@ -32,7 +32,7 @@ var stats = {
     sortDates: function(eloa, elob) {
         var a = stats.datify(eloa.date);
         var b = stats.datify(elob.date);
-        if(a.getTime() < b.getTime()) {
+        if(a.getTime() > b.getTime()) {
             return -1;
         } else {
             return 1;
